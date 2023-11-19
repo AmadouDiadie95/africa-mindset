@@ -406,8 +406,7 @@
         <h3 class="footer__form-title section-title" style="color: white">CONTACTEZ-NOUS</h3>
         <br/>
         <div class="footer__form footer-form" >
-          <form action=""
-            onsubmit="" method="post" data-gtag-submit="form">
+          <form action="https://formspree.io/f/xgejbraq" method="post" data-gtag-submit="form" id="my-form">
             <div class="row g-3">
               <div class="col-12">
                 <input class="form-control" type="text" name="firstName" placeholder="Vorte prenom" required="" />
@@ -424,13 +423,48 @@
                   placeholder="Votre numéro de telephone" required="" />
               </div>
               <div class="col-12">
-                <textarea class="form-control" placeholder="Votre message" rows="5" required=""> </textarea>
+                <textarea class="form-control" name="message" placeholder="Votre message" rows="5" required=""> </textarea>
               </div>
             </div>
-            <button type="submit" class="btn btn-gradient btn-gradient_white" id="btn">
+            <button type="submit" class="btn btn-gradient btn-gradient_white" id="my-form-button">
               Envoyer
             </button>
+            <div class="text-center mt-3" id="my-form-status"></div>
           </form>
+          <!-- Place this script at the end of the body tag -->
+          <script>
+            var form = document.getElementById("my-form");
+
+            async function handleSubmit(event) {
+              event.preventDefault();
+              var status = document.getElementById("my-form-status");
+              var data = new FormData(event.target);
+              fetch(event.target.action, {
+                method: form.method,
+                body: data,
+                headers: {
+                  'Accept': 'application/json'
+                }
+              }).then(response => {
+                if (response.ok) {
+                  status.innerHTML = "Message envoyé avec succèss, nous vous contacterons prochainement !";
+                  alert("Message envoyé avec succèss, nous vous contacterons prochainement !")
+                  form.reset()
+                } else {
+                  response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                      status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+                    } else {
+                      status.innerHTML = "Oops! Erreur lors de l'envoie, veuillez ressayer !"
+                    }
+                  })
+                }
+              }).catch(error => {
+                status.innerHTML = "Oops! Erreur lors de l'envoie, veuillez ressayer !"
+              });
+            }
+            form.addEventListener("submit", handleSubmit)
+          </script>
         </div>
       </div>
       <div class="footer__content container">
